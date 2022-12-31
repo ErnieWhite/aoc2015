@@ -29,15 +29,10 @@ For example:
 After following the instructions, how many lights are lit?
 """
 import re
-import tkinter as tk
+
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    root.geometry('1000x1000')
-    canvas = tk.Canvas(root, width=1000, height=1000, bg='white')
-    canvas.pack(anchor=tk.CENTER, expand=True)
-
-    lights = [[False for column in range(1000)] for row in range(1000)]
+    lights = [[0 for column in range(1000)] for row in range(1000)]
     with open('data/day6input.txt', 'r', encoding='utf-8') as f:
         instructions = f.readlines()
         for instruction in instructions:
@@ -49,35 +44,28 @@ if __name__ == '__main__':
             if instruction.startswith('toggle'):
                 for row in range(top_left[1], bottom_right[1]+1):
                     for column in range(top_left[0], bottom_right[0]+1):
-                        lights[row][column] = not lights[row][column]
+                        lights[row][column] += 2
                 continue
 
             if instruction.startswith('turn on'):
                 for row in range(top_left[1], bottom_right[1]+1):
                     for column in range(top_left[0], bottom_right[0]+1):
-                        lights[row][column] = True
+                        lights[row][column] += 1
                 continue
 
             if instruction.startswith('turn off'):
                 for row in range(top_left[1], bottom_right[1]+1):
                     for column in range(top_left[0], bottom_right[0]+1):
-                        lights[row][column] = False
+                        if lights[row][column] > 0:
+                            lights[row][column] -= 1
                 continue
 
-        count = 0
-        for row in range(1000):
-            for column in range(1000):
-                if lights[row][column]:
-                    canvas.create_rectangle((column, row), (column, row))
+        max_color = 0
+        brightness = 0
         for line in lights:
             for light in line:
-                if light:
-                    count += 1
-                    print('.', end='')
-                else:
-                    print(' ', end='')
+                max_color = max((max_color, light))
+                brightness += light
 
-            print()
-        print(count)
-        root.mainloop()
-
+        print(max_color)
+        print(brightness)
